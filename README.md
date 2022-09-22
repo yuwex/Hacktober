@@ -1,3 +1,1 @@
 **Hacktober 🎃**
-
-Spoooky!
