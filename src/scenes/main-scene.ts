@@ -8,6 +8,7 @@ export class MainScene extends Phaser.Scene {
   inputManager: InputManager;
 
   constructor() {
+    console.log("new");
     super({ key: 'MainScene' });
   }
 
