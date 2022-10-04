@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './src/game.ts',
@@ -15,13 +17,24 @@ module.exports = {
         loader: 'ts-loader'
       },
       {
-        test: require.resolve('Phaser'),
-        loader: 'expose-loader',
-        options: { exposes: { globalName: 'Phaser', override: true } }
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '/assets/[name].[ext]'
+        }
       }
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'assets'),
+          to: path.resolve(__dirname, 'dist/assets')
+        }
+      ]
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './index.html')
     })

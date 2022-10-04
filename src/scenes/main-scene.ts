@@ -1,6 +1,8 @@
 import { InputManager } from '../core/inputManager';
 import { NoteLane } from '../objects/noteLane';
 
+// const circle1 = require('/assets/circle1.png');
+
 export class MainScene extends Phaser.Scene {
   noteLane: NoteLane;
   inputManager: InputManager;
@@ -10,9 +12,10 @@ export class MainScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.image('redhat', '../assets/redhat.png');
-    this.load.image('redParticle', '../assets/red.png');
-    this.load.image('circle1', '../assets/circle1.png');
+    // this.load.image('redhat', '../../assets/redhat.png');
+    // this.load.image('redParticle', '../../assets/red.png');
+    // this.load.image('circle1', circle1);
+    this.load.image('circle1', './assets/circle1.png');
   }
 
   create(): void {
