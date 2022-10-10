@@ -102,11 +102,9 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
             } else if (accuracy >= 60) {
                 this.accuracyPopup('GOOD');
                 this.score += 90;
-            } else {
+            } else if (accuracy > 0) {
                 this.accuracyPopup('OK');
                 this.score += 80;
-            // } else if (accuracy >= {
-
             }
 
             if(Math.abs(this.noteHitX - note.x) <= 64) {
