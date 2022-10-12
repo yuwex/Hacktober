@@ -1,13 +1,19 @@
+import { Time } from "phaser";
+import { Note } from "./note";
+
 export class NoteLane extends Phaser.GameObjects.GameObject {
     sprite: Phaser.GameObjects.Sprite;
 
     songPlaying: boolean = false;
-    notes: Phaser.GameObjects.Sprite[];
+    notes: Note[];
     hittableNoteRangeMin: number = 0;
     hittableNoteRangeMax: number;
     destroyedNotesCount: number = 0;
     bpm: number = 0;
     noteGap: number = 128;
+
+    clock: Phaser.Time.Clock;
+    songOffset: number = 0;
 
     noteHitX: number = 128;
 
@@ -36,11 +42,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     // Draws some things on screen
-    init(songData: any[]): void {
+    init(songData: any[], clock: Phaser.Time.Clock): void {
         this.centerX = this.scene.cameras.main.centerX;
         this.centerY = this.scene.cameras.main.centerY;
 
         this.notes = [];
+        this.clock = clock;
 
         // Draws the lane
         const rectWidth = 128;
@@ -59,24 +66,28 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.accuracyText = this.scene.add.text(0, 30, "Start!", { fontFamily: this.ourFontFamily });
         this.accuracyText.setAlpha(1);
 
-        this.startSong(songData);
+        this.startSong(songData, clock);
     }
 
-    update(delta: number): void {
+    update(delta: number, time: number): void {
         if(!this.songPlaying) return;
+
+        time = time - this.songOffset;
         // if(Phaser.Math.Between(0, 10) === 8)
         //     console.log(delta)
 
-        // Move every note a certain amount to the left each frame
+        // Change accuracy opacity
         if (this.accuracyText.alpha > 0) {
-            this.accuracyText.setAlpha(this.accuracyText.alpha - (delta / 1000))
+            this.accuracyText.setAlpha(this.accuracyText.alpha - (delta / 1000));
         }
 
+        // For every note, if offscreen, delete it
         for(let i = 0; i < this.notes.length; i++) {
             const note = this.notes[i];
             if(!note.active) continue;
-
-            note.x -= (delta / 1000) * (this.bpm / 60) * this.noteGap;
+            
+            // Use time for notes
+            note.x = (note.time - time) + this.noteHitX;
             if(note.x < 0) {
                 note.destroy();
                 this.destroyedNotesCount++;
@@ -90,9 +101,10 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
         if(this.destroyedNotesCount >= this.notes.length) {
             // only move on if did well enough 
+            // console.log(`LevelScore: ${this.levelScore}, ScoreToMoveOn: ${this.ScoreToMoveOn}`)
             if (this.levelScore > this.ScoreToMoveOn){
                 this.keepGoing();
-                this.startSong([]);
+                this.startSong([], this.clock);
             } else {
                 this.endSong();
                 // make this nicer, display totalscore and give cool message 
@@ -104,7 +116,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         }
     }
 
-    tryHitNote(note: 1 | 2) {
+    tryHitNote(note: 1 | 2, time: number) {
         let hitNote = false;
 
         /* The game needs to know which note to test (to see if it's close enough) whenever the Z/X button is hit. 
@@ -154,7 +166,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     }
 
-    startSong(songData: any[]) {
+    startSong(songData: any[], clock: Phaser.Time.Clock) {
 
         // TODO: replace this with getting data from songData.notes
         // https://github.com/bui/taiko-web/wiki/TJA-format
@@ -166,11 +178,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
         // Placeholder
         for(let i = 0; i < 9; i++) {
-            const note = new Phaser.GameObjects.Sprite(
+            const note = new Note(
                 this.scene, 
-                this.centerX * 2 + this.noteGap * i,
+                this.centerX * 2,
                 this.centerY,
-                'circle1');
+                'circle1',
+                (i + 1) * 1000);
 
             note.setDepth(1);
             this.scene.add.existing(note);
@@ -180,6 +193,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = Math.min(this.notes.length - 1, 4);
 
+        this.songOffset = clock.now;
         this.songPlaying = true;
     }
 

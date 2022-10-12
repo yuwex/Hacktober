@@ -21,14 +21,14 @@ export class MainScene extends Phaser.Scene {
 
   create(): void {
     this.noteLane = new NoteLane(this);
-    this.noteLane.init([]);
+    this.noteLane.init([], this.time);
 
     this.inputManager = new InputManager(this);
-    this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote(1));
+    this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote(1, this.time.now));
     this.inputManager.addInputEvent('X', () => console.log('x'));
   }
 
   update(time: number, delta: number): void {
-      this.noteLane.update(delta);
+      this.noteLane.update(delta, time);
   }
 }
