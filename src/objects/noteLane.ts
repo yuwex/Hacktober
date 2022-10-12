@@ -11,14 +11,25 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     noteHitX: number = 128;
 
-    score: number = 0;
-    scoreDisplay: Phaser.GameObjects.Text;
+    totalScore: number = 0;
+    totalScoreDisplay: Phaser.GameObjects.Text;
+
+    levelScore: number = 0;
+    levelScoreDisplay: Phaser.GameObjects.Text;
 
     accuracyText: Phaser.GameObjects.Text;
 
+    // when loose the game
+    endMessage: Phaser.GameObjects.Text;
+    // the score needed to progress to next level
+    ScoreToMoveOn: number = 100;
+    
     // Center of the screen
     centerX: number;
     centerY: number;
+
+    // create as var so easy to change all at once 
+    ourFontFamily: string = 'Georgia, "Goudy Bookletter 1911", Times, serif';
 
     constructor(scene: Phaser.Scene) {
         super(scene, "noteLane");
@@ -41,10 +52,11 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         noteHitCircle.setDepth(2);
 
         // Score text
-        this.scoreDisplay = this.scene.add.text(0, 0, '0', { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
-        
+        this.levelScoreDisplay = this.scene.add.text(0, 15, 'level Score: 0', { fontFamily: this.ourFontFamily });
+        this.totalScoreDisplay = this.scene.add.text(0, 0, 'total Score: 0', { fontFamily: this.ourFontFamily });
+
         // Accuracy popup
-        this.accuracyText = this.scene.add.text(0, 30, "Start!", { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+        this.accuracyText = this.scene.add.text(0, 30, "Start!", { fontFamily: this.ourFontFamily });
         this.accuracyText.setAlpha(1);
 
         this.startSong(songData);
@@ -75,8 +87,20 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.hittableNoteRangeMin = Math.max(0, this.destroyedNotesCount - 4);
         this.hittableNoteRangeMax = Math.min(this.notes.length - 1, this.destroyedNotesCount + 4);
 
+
         if(this.destroyedNotesCount >= this.notes.length) {
-            this.endSong();
+            // only move on if did well enough 
+            if (this.levelScore > this.ScoreToMoveOn){
+                this.keepGoing();
+                this.startSong([]);
+            } else {
+                this.endSong();
+                // make this nicer, display totalscore and give cool message 
+                // rage game element -> have annoying message refrencing the score
+                this.endMessage = this.scene.add.text(this.centerX, this.centerY, 'GAME OVER', { fontFamily: this.ourFontFamily  });
+                this.endMessage.setColor('#FD7E14');
+                this.endMessage.setFontSize(45); // prolly a better way to do this
+            }
         }
     }
 
@@ -98,13 +122,13 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
             if (accuracy >= 85) {
                 this.accuracyPopup('PERFECT');
-                this.score += 100;
+                this.levelScore += 100;
             } else if (accuracy >= 60) {
                 this.accuracyPopup('GOOD');
-                this.score += 90;
+                this.levelScore += 90;
             } else if (accuracy > 0) {
                 this.accuracyPopup('OK');
-                this.score += 80;
+                this.levelScore += 80;
             }
 
             if(Math.abs(this.noteHitX - note.x) <= 64) {
@@ -122,10 +146,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         else {
             this.accuracyPopup('MISS');
             console.log("MISS");
-            this.score -= 100;
+            this.levelScore -= 100;
         }
         
-        this.scoreDisplay.setText(this.score.toString());
+        this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
+        // maybe also update total score each time instead of at end of level
+
     }
 
     startSong(songData: any[]) {
@@ -158,15 +184,14 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     endSong() {
-        console.log(`Song ended with score of ${this.score}.`);
+        console.log(`Song ended with score of ${this.totalScore}.`);
         this.songPlaying = false;
         this.notes = [];
-        this.score = 0;
+        this.levelScore = 0;
+        this.totalScore = 0;
         this.destroyedNotesCount = 0;
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = 0;
-
-        this.startSong([]);
     }
 
     // Funny animation text
@@ -193,5 +218,19 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
                 break;
         }
 
+    }
+
+
+    // feels super janky, most likely a better way
+    keepGoing() {
+        console.log(`level ended with score of ${this.levelScore}. Next level Coming up!`);
+        this.notes = [];
+        this.totalScore += this.levelScore;
+        this.totalScoreDisplay.setText("total Score: " +this.totalScore.toString());
+        this.levelScore = 0;
+        this.levelScoreDisplay.setText("level Score: " +this.levelScore.toString());
+        this.destroyedNotesCount = 0;
+        this.hittableNoteRangeMin = 0;
+        this.hittableNoteRangeMax = 0;
     }
 }
