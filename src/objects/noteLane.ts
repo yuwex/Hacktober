@@ -37,6 +37,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     // create as var so easy to change all at once 
     ourFontFamily: string = 'Georgia, "Goudy Bookletter 1911", Times, serif';
 
+    endMessages: string[] = ["Message 1", "Message 2" , "Message 3"];
+
     constructor(scene: Phaser.Scene) {
         super(scene, "noteLane");
     }
@@ -59,6 +61,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         noteHitCircle.setDepth(2);
 
         // Score text
+        // find way to not hard core in the position values
         this.levelScoreDisplay = this.scene.add.text(0, 15, 'level Score: 0', { fontFamily: this.ourFontFamily });
         this.totalScoreDisplay = this.scene.add.text(0, 0, 'total Score: 0', { fontFamily: this.ourFontFamily });
 
@@ -98,7 +101,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.hittableNoteRangeMin = Math.max(0, this.destroyedNotesCount - 4);
         this.hittableNoteRangeMax = Math.min(this.notes.length - 1, this.destroyedNotesCount + 4);
 
-
         if(this.destroyedNotesCount >= this.notes.length) {
             // only move on if did well enough 
             // console.log(`LevelScore: ${this.levelScore}, ScoreToMoveOn: ${this.ScoreToMoveOn}`)
@@ -109,9 +111,9 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
                 this.endSong();
                 // make this nicer, display totalscore and give cool message 
                 // rage game element -> have annoying message refrencing the score
-                this.endMessage = this.scene.add.text(this.centerX, this.centerY, 'GAME OVER', { fontFamily: this.ourFontFamily  });
+                this.endMessage = this.scene.add.text(this.centerX, this.centerY, 'GAME OVER ' + this.pickRandom(this.endMessages), { fontFamily: this.ourFontFamily  });
                 this.endMessage.setColor('#FD7E14');
-                this.endMessage.setFontSize(45); // prolly a better way to do this
+                this.endMessage.setFontSize(25); // prolly a better way to do this
             }
         }
     }
@@ -257,5 +259,10 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.totalScore += addThis;
         this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
         this.totalScoreDisplay.setText("total Score: " + this.totalScore.toString());
+    }
+
+    // returns random message from array
+    pickRandom(arr: any[]){
+        return arr[Math.floor(Math.random() * (arr.length))];
     }
 }
