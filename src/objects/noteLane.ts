@@ -9,11 +9,11 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     hittableNoteRangeMin: number = 0;
     hittableNoteRangeMax: number;
     destroyedNotesCount: number = 0;
-    bpm: number = 0;
-    noteGap: number = 128;
+    
+    songSpeed: number = 1.0;
 
     clock: Phaser.Time.Clock;
-    songOffset: number = 0;
+    clockOffset: number = 0;
 
     noteHitX: number = 128;
 
@@ -75,9 +75,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     update(delta: number, time: number): void {
         if(!this.songPlaying) return;
 
-        time = time - this.songOffset;
-        // if(Phaser.Math.Between(0, 10) === 8)
-        //     console.log(delta)
+        time = time - this.clockOffset;
 
         // Change accuracy opacity
         if (this.accuracyText.alpha > 0) {
@@ -89,8 +87,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
             const note = this.notes[i];
             if(!note.active) continue;
             
-            // Use time for notes
-            note.x = (note.time - time) + this.noteHitX;
+            // Position notes
+            note.x = (note.time - time) * (this.songSpeed + note.speed - 1) + this.noteHitX;
             if(note.x < 0) {
                 note.destroy();
                 this.destroyedNotesCount++;
@@ -118,7 +116,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         }
     }
 
-    tryHitNote(note: 1 | 2, time: number) {
+    tryHitNote() {
         let hitNote = false;
 
         /* The game needs to know which note to test (to see if it's close enough) whenever the Z/X button is hit. 
@@ -131,22 +129,20 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
             if(!note.active) continue;
 
             // If the note is close to the hit zone, destroy it
-            // TODO: Different states based on how close the note is to the hit zone
-            let accuracy: Number = (1 - Math.abs(this.noteHitX - note.x) / 64) * 100;
+            let accuracy: number = (1 - Math.abs(this.noteHitX - note.x) / 64) * 100;
 
             if (accuracy >= 85) {
-                this.accuracyPopup('PERFECT');
                 this.addScore(100);
 
             } else if (accuracy >= 60) {
-                this.accuracyPopup('GOOD');
                 this.addScore(90);
 
             } else if (accuracy > 0) {
-                this.accuracyPopup('OK');
                 this.addScore(80);
 
             }
+
+            this.accuracyPopup(accuracy);
 
             if(Math.abs(this.noteHitX - note.x) <= 64) {
                 note.destroy();
@@ -158,10 +154,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         if(hitNote) {
             console.log("HIT");
             this.destroyedNotesCount++;
-            
         }
         else {
-            this.accuracyPopup('MISS');
             console.log("MISS");
             this.addScore(-100);
         }
@@ -176,11 +170,15 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
         // TODO: replace this with getting data from songData.notes
         // https://github.com/bui/taiko-web/wiki/TJA-format
-        this.bpm = Phaser.Math.Between(90, 240);
 
-        // this.bpm = 30;
+        // I don't think we should use tja format--> 
+        // we aren't necesarily making a taiko clone,
+        // and tja format has a bunch of taiko-specific stuff.
+        // It also would be v hard to map out our own songs with tja format. (i've tried)
+
+        this.songSpeed = Phaser.Math.Between(50, 130) / 100; 
         
-        console.log(`Starting song with BPM of ${this.bpm}.`);
+        console.log(`Starting song with speed multiplier of ${this.songSpeed}.`);
 
         // Placeholder
         for(let i = 0; i < 9; i++) {
@@ -199,7 +197,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = Math.min(this.notes.length - 1, 4);
 
-        this.songOffset = clock.now;
+        this.clockOffset = clock.now;
         this.songPlaying = true;
     }
 
@@ -215,27 +213,21 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     // Funny animation text
-    accuracyPopup(acc: 'PERFECT' | 'GOOD' | 'OK' | 'MISS') {
+    accuracyPopup(acc: number) {
         this.accuracyText.setAlpha(1);
-        this.accuracyText.setColor('#FFFFFF');
-        this.accuracyText.setText(acc);
         
-        switch (acc) {
-            case 'PERFECT':
-                this.accuracyText.setColor('#FD7E14');
-                break;
-            
-            case 'GOOD':
-                this.accuracyText.setColor('#FFE066');
-                break;
-            
-            case 'OK':
-                this.accuracyText.setColor('#FFF3BF');
-                break;
-
-            case 'MISS':
-                this.accuracyText.setColor('#676767');
-                break;
+        if (acc >= 85) {
+            this.accuracyText.setColor('#FD7E14');
+            this.accuracyText.setText("PERFECT");
+        } else if (acc >= 60) {
+            this.accuracyText.setColor('#FFE066');
+            this.accuracyText.setText("GOOD");
+        } else if (acc >= 0) {
+            this.accuracyText.setColor('#FFF3BF');
+            this.accuracyText.setText("OK");
+        } else {
+            this.accuracyText.setColor('#676767');
+            this.accuracyText.setText("MISS");
         }
     }
 
