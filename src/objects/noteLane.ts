@@ -25,8 +25,9 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     accuracyText: Phaser.GameObjects.Text;
 
-    // when loose the game
+    // text to show when lose the game
     endMessage: Phaser.GameObjects.Text;
+    endMessages: string[] = ["Message 1", "Message 2" , "Message 3"];
     // the score needed to progress to next level
     ScoreToMoveOn: number = 100;
     
@@ -36,8 +37,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     // create as var so easy to change all at once 
     ourFontFamily: string = 'Georgia, "Goudy Bookletter 1911", Times, serif';
-
-    endMessages: string[] = ["Message 1", "Message 2" , "Message 3"];
 
     constructor(scene: Phaser.Scene) {
         super(scene, "noteLane");
@@ -139,7 +138,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
             } else if (accuracy > 0) {
                 this.addScore(80);
-
             }
 
             this.accuracyPopup(accuracy);
@@ -159,15 +157,9 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
             console.log("MISS");
             this.addScore(-100);
         }
-        
-        this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
-        // maybe also update total score each time instead of at end of level
-        // this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
-
     }
 
     startSong(songData: any[], clock: Phaser.Time.Clock) {
-
         // TODO: replace this with getting data from songData.notes
         // https://github.com/bui/taiko-web/wiki/TJA-format
 
@@ -230,7 +222,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
             this.accuracyText.setText("MISS");
         }
     }
-
 
     // feels super janky, most likely a better way
     keepGoing() {
