@@ -134,13 +134,16 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
             if (accuracy >= 85) {
                 this.accuracyPopup('PERFECT');
-                this.levelScore += 100;
+                this.addScore(100);
+
             } else if (accuracy >= 60) {
                 this.accuracyPopup('GOOD');
-                this.levelScore += 90;
+                this.addScore(90);
+
             } else if (accuracy > 0) {
                 this.accuracyPopup('OK');
-                this.levelScore += 80;
+                this.addScore(80);
+
             }
 
             if(Math.abs(this.noteHitX - note.x) <= 64) {
@@ -158,11 +161,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         else {
             this.accuracyPopup('MISS');
             console.log("MISS");
-            this.levelScore -= 100;
+            this.addScore(-100);
         }
         
         this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
         // maybe also update total score each time instead of at end of level
+        // this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
 
     }
 
@@ -231,7 +235,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
                 this.accuracyText.setColor('#676767');
                 break;
         }
-
     }
 
 
@@ -239,12 +242,20 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     keepGoing() {
         console.log(`level ended with score of ${this.levelScore}. Next level Coming up!`);
         this.notes = [];
-        this.totalScore += this.levelScore;
-        this.totalScoreDisplay.setText("total Score: " +this.totalScore.toString());
+        // this.totalScore += this.levelScore;
+        // this.totalScoreDisplay.setText("total Score: " +this.totalScore.toString());
         this.levelScore = 0;
         this.levelScoreDisplay.setText("level Score: " +this.levelScore.toString());
         this.destroyedNotesCount = 0;
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = 0;
+    }
+
+    // adds to both level and toal 
+    addScore(addThis: number){
+        this.levelScore += addThis;
+        this.totalScore += addThis;
+        this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
+        this.totalScoreDisplay.setText("total Score: " + this.totalScore.toString());
     }
 }

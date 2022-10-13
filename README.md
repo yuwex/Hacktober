@@ -2,7 +2,8 @@
 
 We have created a web-based rythem game! 
 
-Here is some usefull information:
+Here is the current version:
+https://yuwex.github.io/Hacktober/
 
 
 # How to run
