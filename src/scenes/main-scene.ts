@@ -24,7 +24,7 @@ export class MainScene extends Phaser.Scene {
     this.noteLane.init([], this.time);
 
     this.inputManager = new InputManager(this);
-    this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote(1, this.time.now));
+    this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote());
     this.inputManager.addInputEvent('X', () => console.log('x'));
   }
 
