@@ -21,9 +21,7 @@ export class MainScene extends Phaser.Scene {
     this.load.image('circle1', './assets/circle1.png');
 
     // Load a song
-    this.load.audio("song", 
-        "./assets/audio/para_91bpm.mp3"
-        );
+    this.load.audio('song', './assets/audio/para_91bpm.mp3');
   }
 
   create(): void {
