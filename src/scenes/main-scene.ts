@@ -1,9 +1,10 @@
 import { InputManager } from '../core/inputManager';
 import { NoteLane } from '../objects/noteLane';
+import { BaseScene } from './base-scene';
 
 // const circle1 = require('/assets/circle1.png');
 
-export class MainScene extends Phaser.Scene {
+export class MainScene extends BaseScene {
   noteLane: NoteLane;
   inputManager: InputManager;
 
@@ -25,6 +26,14 @@ export class MainScene extends Phaser.Scene {
     this.inputManager = new InputManager(this);
     this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote());
     this.inputManager.addInputEvent('X', () => console.log('x'));
+
+    // NOTE: this doesn't work for some reason...
+    const scannerButton = this.add.text(456, 4, 'Scan RFID');
+    scannerButton.setInteractive();
+    scannerButton.on('mouseup', () => {
+      console.log('click');
+      this.gameManager.changeScene('ScannerScene');
+    });
   }
 
   update(time: number, delta: number): void {
