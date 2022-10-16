@@ -1,6 +1,6 @@
 # Hacktober 🎃
 
-We have created a web-based rythem game! 
+We have created a web-based rhythm game! 
 
 Here is the current version:
 https://yuwex.github.io/Hacktober/
