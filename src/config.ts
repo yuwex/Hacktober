@@ -1,4 +1,6 @@
+import { GameManagerPlugin } from './core/gameManagerPlugin';
 import { MainScene } from './scenes/main-scene';
+import { ScannerScene } from './scenes/scanner-scene';
 
 export const GameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Webpack-Boilerplate',
@@ -15,5 +17,13 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 }
     }
   },
-  scene: [MainScene]
+  plugins: {
+    global: [
+      { key: 'GameManagerPlugin', plugin: GameManagerPlugin, mapping: 'GameManager', start: true }
+    ]
+  },
+  scene: [
+    MainScene,
+    ScannerScene
+  ]
 };
