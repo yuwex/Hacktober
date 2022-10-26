@@ -2,10 +2,12 @@ import { InputManager } from '../core/inputManager';
 import { AudioPlayer } from '../objects/audioPlayer';
 import { NoteLane } from '../objects/noteLane';
 import { BaseScene } from './base-scene';
+import { GameBoard } from '../objects/gameBoard';
 
 // const circle1 = require('/assets/circle1.png');
 
 export class MainScene extends BaseScene {
+  gameBoard: GameBoard;
   noteLane: NoteLane;
   inputManager: InputManager;
   audioPlayer: AudioPlayer;
@@ -25,14 +27,15 @@ export class MainScene extends BaseScene {
   }
 
   create(): void {
-    this.noteLane = new NoteLane(this);
-    this.noteLane.init([], this.time);
+    this.gameBoard = new GameBoard(this);
+    this.gameBoard.init([], this.time);
+    this.gameBoard.startSong([], this.time);
 
     this.audioPlayer = new AudioPlayer(this);
     this.audioPlayer.init("song");
 
     this.inputManager = new InputManager(this);
-    this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote());
+    this.inputManager.addInputEvent('Z', () => this.gameBoard.noteLanes[0].tryHitNote());
     this.inputManager.addInputEvent('X', () => console.log('x'));
 
     // NOTE: this doesn't work for some reason...
@@ -48,6 +51,6 @@ export class MainScene extends BaseScene {
   }
 
   update(time: number, delta: number): void {
-      this.noteLane.update(delta, time);
+      this.gameBoard.update(delta, time);
   }
 }

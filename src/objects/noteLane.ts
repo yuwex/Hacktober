@@ -1,11 +1,11 @@
-import { Time } from "phaser";
 import { Note } from "./note";
+import { GameBoard } from "./gameBoard"
 
 export class NoteLane extends Phaser.GameObjects.GameObject {
-    sprite: Phaser.GameObjects.Sprite;
+    gameBoard: GameBoard;
 
     songPlaying: boolean = false;
-    notes: Note[];
+    notes: Note[] = [];
     hittableNoteRangeMin: number = 0;
     hittableNoteRangeMax: number;
     destroyedNotesCount: number = 0;
@@ -68,7 +68,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.accuracyText = this.scene.add.text(0, 30, "Start!", { fontFamily: this.ourFontFamily });
         this.accuracyText.setAlpha(1);
 
-        this.startSong(songData, clock);
+        console.log("initedded")
+        // this.startSong(songData, clock);
     }
 
     update(delta: number, time: number): void {
@@ -160,13 +161,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     startSong(songData: any[], clock: Phaser.Time.Clock) {
-        // TODO: replace this with getting data from songData.notes
-        // https://github.com/bui/taiko-web/wiki/TJA-format
-
-        // I don't think we should use tja format--> 
-        // we aren't necesarily making a taiko clone,
-        // and tja format has a bunch of taiko-specific stuff.
-        // It also would be v hard to map out our own songs with tja format. (i've tried)
 
         this.songSpeed = Phaser.Math.Between(50, 130) / 100; 
         
