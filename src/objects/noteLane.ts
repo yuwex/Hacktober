@@ -3,7 +3,6 @@ import { Note } from "./note";
 import { GameBoard } from '../objects/gameBoard';
 
 
-
 export class NoteLane extends Phaser.GameObjects.GameObject {
     sprite: Phaser.GameObjects.Sprite;
 
@@ -14,6 +13,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     songPlaying: boolean = false;
     notes: Note[];
+
     hittableNoteRangeMin: number = 0;
     hittableNoteRangeMax: number;
     destroyedNotesCount: number = 0;
@@ -30,9 +30,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     accuracyText: Phaser.GameObjects.Text;
 
+    keyToPress: string;
+    keyToPressShow: Phaser.GameObjects.Text;
+
     // text to show when lose the game
     endMessage: Phaser.GameObjects.Text;
-    endMessages: string[] = ["Whatever.", "You Tried." , "Git Gud."];
+    endMessages: string[] = ["Whatever.", "You Tried." , "Git Gud." , "Yikes." , "Could be better" ];
     // the score needed to progress to next level
     ScoreToMoveOn: number = 100;
     
@@ -50,13 +53,13 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     // Draws some things on screen
-    init(songData: any[], clock: Phaser.Time.Clock, whichLane: integer, numOfLanes: integer, gb: GameBoard): void {
+    init(songData: any[], clock: Phaser.Time.Clock, whichLane: integer, numOfLanes: integer, gb: GameBoard, key: string): void {
         this.gameBoard = gb;
         this.centerX = this.scene.cameras.main.centerX;
         this.centerY = (this.scene.cameras.main.centerY / numOfLanes) * whichLane;
-
         this.notes = [];
         this.clock = clock;
+        this.keyToPress = key;
 
         // Draws the lane
         const rectWidth = 128;
@@ -64,17 +67,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
         // Draws the circle where notes should be when hit
         // const noteHitCircle = this.scene.add.circle(this.noteHitX, this.centerY, 64);
-
-        // const noteHitCircle = this.scene.make.image({
-        //     x: this.noteHitX,
-        //     y: this.centerY,
-        //     add: true
-        // });
+        // noteHitCircle.setStrokeStyle(4, 0x111111);
 
         const noteHitCircle = this.scene.add.image(this.noteHitX, this.centerY, "goal")
+        this.keyToPressShow = this.scene.add.text(this.noteHitX , this.centerY , this.keyToPress, { fontFamily: this.ourFontFamily });
+        this.keyToPressShow.setColor('#0000FF');
 
-        // const noteHitCircle = this.scene.add.image(this.noteHitX, this.centerY,"goal.png"); 
-        // noteHitCircle.setStrokeStyle(4, 0x111111);
         noteHitCircle.setDepth(0);
 
         this.accuracyText = this.scene.add.text(0, this.centerY , "Start!", { fontFamily: this.ourFontFamily });
@@ -119,15 +117,14 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
         if(this.destroyedNotesCount >= this.notes.length) {
             // only move on if did well enough 
-            // console.log(`LevelScore: ${this.levelScore}, ScoreToMoveOn: ${this.ScoreToMoveOn}`)
-            if (this.gameBoard.levelScore > this.ScoreToMoveOn){
+            if (this.laneScore > this.ScoreToMoveOn){
                 this.keepGoing();
                 this.startSong([], this.clock);
             } else {
                 this.endSong();
                 // make this nicer, display totalscore and give cool message 
                 // rage game element -> have annoying message refrencing the score
-                this.endMessage = this.scene.add.text(this.centerX, this.centerY, 'GAME OVER ' + this.pickRandom(this.endMessages), { fontFamily: this.ourFontFamily  });
+                this.endMessage = this.scene.add.text(this.centerX, this.centerY, this.pickRandom(this.endMessages), { fontFamily: this.ourFontFamily  });
                 this.endMessage.setColor('#FD7E14');
                 this.endMessage.setFontSize(25); // prolly a better way to do this
             }
@@ -179,7 +176,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     addScore(addThis: number){
-        this.gameBoard.addScore(addThis);
+        this.gameBoard.addScore(addThis); // for the scores for the whole gameBoard
         this.laneScore += addThis;
         this.laneScoreDisplay.setText(this.laneScore.toString());
     }
@@ -218,20 +215,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.songPlaying = true;
     }
 
-    endSong() {
-        console.log(`Song ended with score of ${this.gameBoard.totalScore}.`);
-        this.songPlaying = false;
-        this.notes = [];
-        this.gameBoard.levelScore = 0;
-        this.gameBoard.totalScore = 0;
-        this.destroyedNotesCount = 0;
-        this.hittableNoteRangeMin = 0;
-        this.hittableNoteRangeMax = 0;
-    }
-
     // Funny animation text
-
-    // change colors here so its easier to read on white
+    // change colors here so its easier to read on white ?
     accuracyPopup(acc: number) {
         this.accuracyText.setAlpha(1);
         
@@ -257,10 +242,24 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         // this.totalScore += this.levelScore;
         // this.totalScoreDisplay.setText("total Score: " +this.totalScore.toString());
         this.gameBoard.levelScore = 0;
+        this.laneScore = 0;
+        this.laneScoreDisplay.setText(this.laneScore.toString());
         this.gameBoard.levelScoreDisplay.setText("level Score: " +this.gameBoard.levelScore.toString());
         this.destroyedNotesCount = 0;
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = 0;
+    }
+
+    endSong() {
+        console.log(`Song ended with score of ${this.gameBoard.totalScore}.`);
+        this.songPlaying = false;
+        this.notes = [];
+        this.gameBoard.levelScore = 0;
+        this.gameBoard.totalScore = 0;
+        this.destroyedNotesCount = 0;
+        this.hittableNoteRangeMin = 0;
+        this.hittableNoteRangeMax = 0;
+        this.laneScore = 0;
     }
 
     // returns random message from array

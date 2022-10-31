@@ -9,7 +9,6 @@ import { Game } from 'phaser';
 // const circle1 = require('/assets/circle1.png');
 
 export class MainScene extends BaseScene {
-  numOfLanes: integer;
   keys: string[] = ["Z","X","C"];
   gameBoard: GameBoard;
 
@@ -21,6 +20,8 @@ export class MainScene extends BaseScene {
     // this.load.image('redhat', '../../assets/redhat.png');
     // this.load.image('redParticle', '../../assets/red.png');
     // this.load.image('circle1', circle1);
+
+    // sets up our sprites to use later
     this.load.image('circle1', './assets/note.png');
     this.load.image('goal', './assets/goal.png');
 
@@ -29,13 +30,8 @@ export class MainScene extends BaseScene {
   }
 
   create(): void {
-
-    // you can change how many lanes
-    this.numOfLanes = 2;
-
     this.gameBoard  = new GameBoard(this, "TheBoard");
-    this.gameBoard.init(this.time, this.numOfLanes);
-
+    this.gameBoard.init(this.time);
   }
 
   update(time: number, delta: number): void {
