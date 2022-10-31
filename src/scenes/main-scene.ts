@@ -21,7 +21,7 @@ export class MainScene extends BaseScene {
     // this.load.image('redhat', '../../assets/redhat.png');
     // this.load.image('redParticle', '../../assets/red.png');
     // this.load.image('circle1', circle1);
-    this.load.image('circle1', './assets/circle1.png');
+    this.load.image('circle1', './assets/note.png');
 
     // Load a song
     this.load.audio('song', './assets/audio/para_91bpm.mp3');
