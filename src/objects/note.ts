@@ -8,6 +8,8 @@ export class Note extends Phaser.GameObjects.Sprite {
         // Variable for when the note SHOULD be hit.
         this.time = time;
         this.speed = speed;
+        this.scaleX = 10;
+        this.scaleY = 10;
     }
 
 }
