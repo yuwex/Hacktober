@@ -3,12 +3,15 @@ import { AudioPlayer } from '../objects/audioPlayer';
 import { NoteLane } from '../objects/noteLane';
 import { BaseScene } from './base-scene';
 
+import { GameBoard } from '../objects/gameBoard';
+import { Game } from 'phaser';
+
 // const circle1 = require('/assets/circle1.png');
 
 export class MainScene extends BaseScene {
-  noteLane: NoteLane;
-  inputManager: InputManager;
-  audioPlayer: AudioPlayer;
+  numOfLanes: integer;
+  keys: string[] = ["Z","X","C"];
+  gameBoard: GameBoard;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -25,29 +28,16 @@ export class MainScene extends BaseScene {
   }
 
   create(): void {
-    this.noteLane = new NoteLane(this);
-    this.noteLane.init([], this.time);
 
-    this.audioPlayer = new AudioPlayer(this);
-    this.audioPlayer.init("song");
+    // you can change how many lanes
+    this.numOfLanes = 2;
 
-    this.inputManager = new InputManager(this);
-    this.inputManager.addInputEvent('Z', () => this.noteLane.tryHitNote());
-    this.inputManager.addInputEvent('X', () => console.log('x'));
+    this.gameBoard  = new GameBoard(this, "TheBoard");
+    this.gameBoard.init(this.time, this.numOfLanes);
 
-    // NOTE: this doesn't work for some reason...
-    const scannerButton = this.add.text(456, 4, 'Scan RFID');
-    scannerButton.setInteractive();
-    scannerButton.on('mouseup', () => {
-      console.log('click');
-      this.gameManager.changeScene('ScannerScene');
-    });
-    
-    // Hit P to play audio!
-    this.inputManager.addInputEvent('P', () => this.audioPlayer.startAudio());
   }
 
   update(time: number, delta: number): void {
-      this.noteLane.update(delta, time);
+      this.gameBoard.updateInBoard(time,delta);
   }
 }

@@ -1,8 +1,16 @@
 import { Time } from "phaser";
 import { Note } from "./note";
+import { GameBoard } from '../objects/gameBoard';
+
+
 
 export class NoteLane extends Phaser.GameObjects.GameObject {
     sprite: Phaser.GameObjects.Sprite;
+
+    // I lowered these bc we have multi lanes now
+    // add in something to scale this to num of lanes?
+    minSpeed: integer = 20; 
+    maxSpeed: integer = 60;
 
     songPlaying: boolean = false;
     notes: Note[];
@@ -17,11 +25,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     noteHitX: number = 128;
 
-    totalScore: number = 0;
-    totalScoreDisplay: Phaser.GameObjects.Text;
-
-    levelScore: number = 0;
-    levelScoreDisplay: Phaser.GameObjects.Text;
+    laneScore: number = 0;
+    laneScoreDisplay: Phaser.GameObjects.Text;
 
     accuracyText: Phaser.GameObjects.Text;
 
@@ -38,14 +43,17 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     // create as var so easy to change all at once 
     ourFontFamily: string = 'Georgia, "Goudy Bookletter 1911", Times, serif';
 
+    gameBoard: GameBoard;
+
     constructor(scene: Phaser.Scene) {
         super(scene, "noteLane");
     }
 
     // Draws some things on screen
-    init(songData: any[], clock: Phaser.Time.Clock): void {
+    init(songData: any[], clock: Phaser.Time.Clock, whichLane: integer, numOfLanes: integer, gb: GameBoard): void {
+        this.gameBoard = gb;
         this.centerX = this.scene.cameras.main.centerX;
-        this.centerY = this.scene.cameras.main.centerY;
+        this.centerY = (this.scene.cameras.main.centerY / numOfLanes) * whichLane;
 
         this.notes = [];
         this.clock = clock;
@@ -59,14 +67,15 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         noteHitCircle.setStrokeStyle(4, 0x111111);
         noteHitCircle.setDepth(2);
 
-        // Score text
-        // find way to not hard core in the position values
-        this.levelScoreDisplay = this.scene.add.text(0, 15, 'level Score: 0', { fontFamily: this.ourFontFamily });
-        this.totalScoreDisplay = this.scene.add.text(0, 0, 'total Score: 0', { fontFamily: this.ourFontFamily });
-
-        // Accuracy popup
-        this.accuracyText = this.scene.add.text(0, 30, "Start!", { fontFamily: this.ourFontFamily });
+        this.accuracyText = this.scene.add.text(0, this.centerY , "Start!", { fontFamily: this.ourFontFamily });
         this.accuracyText.setAlpha(1);
+
+        this.laneScoreDisplay = this.scene.add.text(0, this.centerY - 25   , "0" , { fontFamily: this.ourFontFamily });
+        this.laneScoreDisplay.setColor('#000000');
+        this.laneScoreDisplay.setFontSize(20);
+        // this.endMessage.setFontSize(25); // prolly a better way to do this
+
+        this.laneScoreDisplay.setAlpha(1);
 
         this.startSong(songData, clock);
     }
@@ -101,7 +110,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         if(this.destroyedNotesCount >= this.notes.length) {
             // only move on if did well enough 
             // console.log(`LevelScore: ${this.levelScore}, ScoreToMoveOn: ${this.ScoreToMoveOn}`)
-            if (this.levelScore > this.ScoreToMoveOn){
+            if (this.gameBoard.levelScore > this.ScoreToMoveOn){
                 this.keepGoing();
                 this.startSong([], this.clock);
             } else {
@@ -159,6 +168,12 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         }
     }
 
+    addScore(addThis: number){
+        this.gameBoard.addScore(addThis);
+        this.laneScore += addThis;
+        this.laneScoreDisplay.setText(this.laneScore.toString());
+    }
+
     startSong(songData: any[], clock: Phaser.Time.Clock) {
         // TODO: replace this with getting data from songData.notes
         // https://github.com/bui/taiko-web/wiki/TJA-format
@@ -168,7 +183,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         // and tja format has a bunch of taiko-specific stuff.
         // It also would be v hard to map out our own songs with tja format. (i've tried)
 
-        this.songSpeed = Phaser.Math.Between(50, 130) / 100; 
+        this.songSpeed = Phaser.Math.Between(this.minSpeed, this.maxSpeed) / 100; 
         
         console.log(`Starting song with speed multiplier of ${this.songSpeed}.`);
 
@@ -194,17 +209,19 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     endSong() {
-        console.log(`Song ended with score of ${this.totalScore}.`);
+        console.log(`Song ended with score of ${this.gameBoard.totalScore}.`);
         this.songPlaying = false;
         this.notes = [];
-        this.levelScore = 0;
-        this.totalScore = 0;
+        this.gameBoard.levelScore = 0;
+        this.gameBoard.totalScore = 0;
         this.destroyedNotesCount = 0;
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = 0;
     }
 
     // Funny animation text
+
+    // change colors here so its easier to read on white
     accuracyPopup(acc: number) {
         this.accuracyText.setAlpha(1);
         
@@ -225,23 +242,15 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     // feels super janky, most likely a better way
     keepGoing() {
-        console.log(`level ended with score of ${this.levelScore}. Next level Coming up!`);
+        console.log(`level ended with score of ${this.gameBoard.levelScore}. Next level Coming up!`);
         this.notes = [];
         // this.totalScore += this.levelScore;
         // this.totalScoreDisplay.setText("total Score: " +this.totalScore.toString());
-        this.levelScore = 0;
-        this.levelScoreDisplay.setText("level Score: " +this.levelScore.toString());
+        this.gameBoard.levelScore = 0;
+        this.gameBoard.levelScoreDisplay.setText("level Score: " +this.gameBoard.levelScore.toString());
         this.destroyedNotesCount = 0;
         this.hittableNoteRangeMin = 0;
         this.hittableNoteRangeMax = 0;
-    }
-
-    // adds to both level and toal 
-    addScore(addThis: number){
-        this.levelScore += addThis;
-        this.totalScore += addThis;
-        this.levelScoreDisplay.setText("level Score: " + this.levelScore.toString());
-        this.totalScoreDisplay.setText("total Score: " + this.totalScore.toString());
     }
 
     // returns random message from array
