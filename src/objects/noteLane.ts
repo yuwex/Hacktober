@@ -63,9 +63,19 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.scene.add.rectangle(this.centerX, this.centerY, this.centerX * 2, rectWidth, 0xeeeeee);
 
         // Draws the circle where notes should be when hit
-        const noteHitCircle = this.scene.add.circle(this.noteHitX, this.centerY, 64);
-        noteHitCircle.setStrokeStyle(4, 0x111111);
-        noteHitCircle.setDepth(2);
+        // const noteHitCircle = this.scene.add.circle(this.noteHitX, this.centerY, 64);
+
+        // const noteHitCircle = this.scene.make.image({
+        //     x: this.noteHitX,
+        //     y: this.centerY,
+        //     add: true
+        // });
+
+        const noteHitCircle = this.scene.add.image(this.noteHitX, this.centerY, "goal")
+
+        // const noteHitCircle = this.scene.add.image(this.noteHitX, this.centerY,"goal.png"); 
+        // noteHitCircle.setStrokeStyle(4, 0x111111);
+        noteHitCircle.setDepth(0);
 
         this.accuracyText = this.scene.add.text(0, this.centerY , "Start!", { fontFamily: this.ourFontFamily });
         this.accuracyText.setAlpha(1);
