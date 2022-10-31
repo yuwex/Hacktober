@@ -1,7 +1,3 @@
-// import { NoteLane } from "./noteLane";
-// import { Note } from "./note";
-// import { Time } from "phaser";
-// // import { InputManager } from "../core/inputManager";
 import { InputManager } from '../core/inputManager';
 import { AudioPlayer } from '../objects/audioPlayer';
 import { NoteLane } from '../objects/noteLane';

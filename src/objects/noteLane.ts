@@ -1,15 +1,17 @@
-import { Time } from "phaser";
 import { Note } from "./note";
 import { GameBoard } from '../objects/gameBoard';
 
 
 export class NoteLane extends Phaser.GameObjects.GameObject {
-    sprite: Phaser.GameObjects.Sprite;
+    // this chunk at the top are things that may be changed 
 
     // I lowered these bc we have multi lanes now
     // add in something to scale this to num of lanes?
     minSpeed: integer = 20; 
     maxSpeed: integer = 60;
+    // the score needed to progress to next level
+    ScoreToMoveOn: number = 100;
+
 
     songPlaying: boolean = false;
     notes: Note[];
@@ -36,8 +38,6 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     // text to show when lose the game
     endMessage: Phaser.GameObjects.Text;
     endMessages: string[] = ["Whatever.", "You Tried." , "Git Gud." , "Yikes." , "Could be better" ];
-    // the score needed to progress to next level
-    ScoreToMoveOn: number = 100;
     
     // Center of the screen
     centerX: number;
@@ -121,9 +121,8 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
                 this.keepGoing();
                 this.startSong([], this.clock);
             } else {
+                // stop this lane, bc its score was too low
                 this.endSong();
-                // make this nicer, display totalscore and give cool message 
-                // rage game element -> have annoying message refrencing the score
                 this.endMessage = this.scene.add.text(this.centerX, this.centerY, this.pickRandom(this.endMessages), { fontFamily: this.ourFontFamily  });
                 this.endMessage.setColor('#FD7E14');
                 this.endMessage.setFontSize(25); // prolly a better way to do this
@@ -262,7 +261,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         this.laneScore = 0;
     }
 
-    // returns random message from array
+    // returns random element from array - used to select message
     pickRandom(arr: any[]){
         return arr[Math.floor(Math.random() * (arr.length))];
     }
