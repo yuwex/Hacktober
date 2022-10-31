@@ -43,9 +43,9 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     // Draws some things on screen
-    init(songData: any[], clock: Phaser.Time.Clock): void {
+    init(songData: any[], clock: Phaser.Time.Clock, whichLane: integer, numOfLanes: integer): void {
         this.centerX = this.scene.cameras.main.centerX;
-        this.centerY = this.scene.cameras.main.centerY;
+        this.centerY = (this.scene.cameras.main.centerY / numOfLanes) * whichLane;
 
         this.notes = [];
         this.clock = clock;
