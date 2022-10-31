@@ -32,7 +32,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
     // text to show when lose the game
     endMessage: Phaser.GameObjects.Text;
-    endMessages: string[] = ["Message 1", "Message 2" , "Message 3"];
+    endMessages: string[] = ["Game Over.", "You Tried." , "Better Luck Next Time."];
     // the score needed to progress to next level
     ScoreToMoveOn: number = 100;
     
