@@ -85,7 +85,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
 
         this.laneScoreDisplay.setAlpha(1);
 
-        this.startSong(songData, clock);
+        // this.startSong(songData, clock);
     }
 
     update(delta: number, time: number): void {
@@ -131,6 +131,11 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     }
 
     tryHitNote() {
+
+        if (!this.gameBoard.started) {
+            return;
+        }
+
         let hitNote = false;
 
         /* The game needs to know which note to test (to see if it's close enough) whenever the Z/X button is hit. 
