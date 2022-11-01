@@ -10,7 +10,7 @@ export class MainScene extends BaseScene {
 
   preload(): void {
     // sets up our sprites to use later
-    this.load.image('circle1', './assets/note.png');
+    this.load.image('basicNote', './assets/note.png');
     this.load.image('goal', './assets/goal.png');
 
     // Load a song

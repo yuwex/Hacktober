@@ -199,7 +199,7 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
                 this.scene, 
                 this.centerX * 2,
                 this.centerY,
-                'circle1',
+                'basicNote',
                 (i + 1) * 1000);
 
             note.setDepth(1);
