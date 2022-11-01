@@ -22,6 +22,18 @@ control how fast the notes will move across the screen
 
 How high the lane score needs to be to progress
 
+> **difficulty**
+
+The starting difficuluty.
+
+> **difficutlyIncreaseMin**
+
+The minimum increase of difficuluty per round.
+
+> **difficutlyIncreaseMax**
+
+The maximum increase of difficuluty per round.
+
 ### File: src/scenes/main-scene.ts:
 Can change the sprites being loaded and the song being played 
 
