@@ -3,6 +3,7 @@ import { AudioPlayer } from '../objects/audioPlayer';
 import { NoteLane } from '../objects/noteLane';
 
 export class GameBoard extends Phaser.GameObjects.GameObject {
+    started: boolean = false;
     done: boolean;
     gameFinished: Phaser.GameObjects.Text;
 
@@ -20,6 +21,9 @@ export class GameBoard extends Phaser.GameObjects.GameObject {
 
     levelScore: number = 0;
     levelScoreDisplay: Phaser.GameObjects.Text;
+
+    startText: Phaser.GameObjects.Text;
+
     ourFontFamily: string = 'Georgia, "Goudy Bookletter 1911", Times, serif';
 
 
@@ -39,15 +43,24 @@ export class GameBoard extends Phaser.GameObjects.GameObject {
         }
         
         this.audioPlayer = new AudioPlayer(this.scene);
-        this.audioPlayer.init("song");
+        this.audioPlayer.init("siren");
         // P for Audio
-        this.inputManager.addInputEvent('P', () => this.audioPlayer.startAudio());
+        this.inputManager.addInputEvent('P', () => this.startGame());
 
         this.levelScoreDisplay = this.scene.add.text(0, 15, 'level Score: 0', { fontFamily: this.ourFontFamily });
         this.totalScoreDisplay = this.scene.add.text(0, 0, 'total Score: 0', { fontFamily: this.ourFontFamily });
+
+        this.startText = this.scene.add.text(10, 400, 'Welcome to Rhythm Rage! Use Z and X to hit notes. Press P to begin!', { fontFamily: this.ourFontFamily })
+        this.startText.setFontSize(25);
     }
 
     updateInBoard(time: number, delta: number): void {
+        if (!this.started) {
+            return;
+        }
+
+        this.startText.setAlpha(this.startText.alpha - (delta / 1000));
+
         for (let i = 0; i < this.numOfLanes; i++){
             this.lanes[i].update(delta, time);
         }
@@ -61,9 +74,18 @@ export class GameBoard extends Phaser.GameObjects.GameObject {
             }
         }
         // all lanes are done so the whole game is over
-        if (this.done) {
+        if (this.done && this.started) {
             this.wholeGameOver()
         }
+    }
+
+    startGame() {
+        this.audioPlayer.startAudio()
+        for (const lane of this.lanes) {
+            lane.startSong([], this.scene.time)
+        }
+        
+        this.started = true;
     }
 
     addScore(addThis: number){

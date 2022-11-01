@@ -21,7 +21,7 @@ export class AudioPlayer extends Phaser.GameObjects.GameObject {
 
     init(song: string) {
         // Some things to think about: https://blog.ourcade.co/posts/2020/phaser-3-web-audio-best-practices-games/
-        this.audio = this.scene.sound.add("song") as PhaserSound;
+        this.audio = this.scene.sound.add(song) as PhaserSound;
 
     }
 
