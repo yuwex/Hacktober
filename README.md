@@ -44,6 +44,13 @@ Can change the sprites being loaded and the song being played
 * Create multipliers for point values to use our custom made sprites
 * Multiplayer option 
 
+# Contributors
+
+* @AndrewZhovnirovskii: General coding (Structuring, game logic, refactoring), facilitated planning / discussion 
+* @yuwex: General coding (Graphic Effects, Difficulty), sound, group initiative.
+* @guanglinwei: Setup the groundwork of the project (setup the GitHub pages, webpack, and package locks). Answered questions about JS / TS.
+* @4Xe55d3n13d: Did all the spriting / asset creation. Came up with game design ideas.
+* @11111-1111: Helped with concepts.
 
 # How to run
 
