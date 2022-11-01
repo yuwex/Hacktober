@@ -1,10 +1,8 @@
-
 type PhaserSound = Phaser.Sound.BaseSound & {
     volume: number;
 }
 
 export class AudioPlayer extends Phaser.GameObjects.GameObject {
-
     audio: PhaserSound
 
     constructor(scene: Phaser.Scene) {
@@ -30,9 +28,5 @@ export class AudioPlayer extends Phaser.GameObjects.GameObject {
             this.audio.play();
             this.audio.volume = 0.1;
         }
-
-        
     }
-
-
 }
