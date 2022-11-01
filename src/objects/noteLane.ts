@@ -226,6 +226,13 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
         // Placeholder
         for(let i = 0; i <= 32; i++) {
 
+            if (this.gameBoard.totalScore == 0) {
+                if (i % 4 == 0) {
+                    this.createNote("basicNote", (i + 1) * 250 + 1000);
+                }
+                continue;
+            }
+
             if (i % 4 == 0 && chance(90)){
                 this.createNote("basicNote", (i + 1) * 250 + 1000);
                 continue;
