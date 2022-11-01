@@ -49,9 +49,9 @@ export class NoteLane extends Phaser.GameObjects.GameObject {
     gameBoard: GameBoard;
 
     // Var that goes up to 100, representing max difficulty
-    difficulty: number = 1;
-    difficutlyIncreaseMin: 3;
-    difficultyIncreaseMax: 5;
+    difficulty: integer = 1;
+    difficutlyIncreaseMin: integer = 3;
+    difficultyIncreaseMax: integer = 5;
 
     constructor(scene: Phaser.Scene) {
         super(scene, "noteLane");
