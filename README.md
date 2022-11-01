@@ -5,24 +5,25 @@ We have created a web-based rhythm game!
 Here is the current version:
 https://yuwex.github.io/Hacktober/  
 
-<br>
  
-# How to change the game play
+# How to change the gameplay
 Currently the only way to change game features is to manually change variable values. Here is a quick list of some things that can be easily changed to alter the gameplay: 
 ### File: src/objects/gameBoard.ts: 
 > **numOfLanes**  
+
 controls the number of lanes, currently can be changed between 1 and 3 (to go higher just add another key you would like to use)
 
 ### File: src/objects/noteLanes.ts:
-> **minSpeed and maxSpeed**   
+> **minSpeed and maxSpeed**
+
 control how fast the notes will move across the screen
 
-> **ScoreToMoveOn**  
+> **ScoreToMoveOn**
+
 How high the lane score needs to be to progress
 
 ### File: src/scenes/main-scene.ts:
->Can change the sprites being loaded and the song being played 
-
+Can change the sprites being loaded and the song being played 
 
 
 # What features we would want to add
@@ -30,9 +31,6 @@ How high the lane score needs to be to progress
 * Sending notes to correspond to the song playing 
 * Create multipliers for point values to use our custom made sprites
 * Multiplayer option 
-
-
-
 
 
 # How to run

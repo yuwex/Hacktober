@@ -12,5 +12,4 @@ export class Note extends Phaser.GameObjects.Sprite {
         this.scaleX = this.scaleFactor;
         this.scaleY = this.scaleFactor;
     }
-
 }
